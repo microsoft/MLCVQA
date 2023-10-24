@@ -1,0 +1,9 @@
+[submodule "tridivb_slowfast_feature_extractor_52553965"]
+	path = tridivb_slowfast_feature_extractor_52553965
+	url = https://skype.visualstudio.com/DefaultCollection/TPS/_git/tridivb_slowfast_feature_extractor_52553965
+[submodule "facebookresearch_slowfast_52795996"]
+	path = facebookresearch_slowfast_52795996
+	url = https://skype.visualstudio.com/DefaultCollection/TPS/_git/facebookresearch_slowfast_52795996
+[submodule "netflix_vmaf_52795976"]
+	path = netflix_vmaf_52795976
+	url = https://skype.visualstudio.com/DefaultCollection/TPS/_git/netflix_vmaf_52795976
