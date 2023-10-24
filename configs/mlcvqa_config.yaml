@@ -1,0 +1,73 @@
+dataset_name: sf_vmaf_feats_dataset #dataset name based on the dataloader
+train_split: 'train'  #split name of training split
+val_split: 'test'     #split name of test split
+model_name: "FeatConvTransformer"  #name of model, check meta_arch.py for what models are available and their names
+# devices: ['cuda:0','cuda:1','cuda:2','cuda:3','cuda:4','cuda:5','cuda:6','cuda:7']  
+devices: ['cuda:0']
+
+dataset: {
+  input_dim : 4960, #4608,  #defines the size of feature vectors, this is 2304 for Slowfast
+  padded_seq_len : 12, #defines the length of the sequences after padding. This needs to be divisible by 4 if you use 2 levels of fpn
+  n_temporal_aug : 2, #can be only 2 (subsample feature vectors with a step of two) or 0 (no temporal augmentation)
+  #change seq len based on temporal aug
+  window_size: 64,
+  stride: 16
+}
+
+model: {
+        # type of backbone (convTransformer | conv)
+        backbone_type: 'convTransformer',
+        # type of FPN (fpn | identity)
+        fpn_type: "identity",
+        #number of embedding layers, number of neck layers, number of layers in final fpn
+        backbone_arch: [3,1,2], 
+        embd_dim: 128,
+        fpn_dim: 128,
+        head_dim: 128,
+        #whether to weight features based on time (later features get higher weight)
+        recency_weighting: False,
+        # scale factor between pyramid levels
+        scale_factor: 2,
+        #same as above
+        padded_seq_len : 12, #20 or 12
+        #whether to use positional embedding
+        use_abs_pe : True,
+}
+
+opt: {
+  learning_rate: 0.001,
+  weight_decay: 0.00001,
+  backbone_learning_rate: 0.0001, 
+  head_learning_rate: 0.005,
+  epochs: 10, #in addition to the warmup
+
+  # lr scheduler: cosine / multistep
+  warmup: True,
+  warmup_epochs: 15,
+  schedule_type: "cosine",
+}
+
+train_loader: {
+    batch_size: 32,
+    num_workers: 32,
+}
+
+test_loader: {
+    batch_size: 32,
+    num_workers: 6,
+}
+
+train_cfg: {
+  init_loss_norm: 400,
+  clip_grad_l2norm: -1.0,
+  train_droppath : 0.3,
+  drop_path : 0.3,
+  dropout : 0.3,
+  loss : "huber", #can be huber, mae, mse
+}
+
+test_cfg: {
+  ckpt_path: "/home/azureuser/cloudfiles/data/datastore/mlvideo/azureml/b86cecf6-7460-4443-97ca-a93b16346ce8/ckpt/sf_clic_feats_raw_mos_old_aug_split_any_vmaf_2022-11-09 23%253A00%253A10",
+  save_outputs: "/home/azureuser/cloudfiles/code/Users/rubenal/reports/mlcvqa",
+  print_freq: 10
+}
