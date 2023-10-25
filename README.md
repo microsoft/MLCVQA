@@ -65,22 +65,13 @@ We have three configuration files, one for VMAF, one for SlowFast and one for ML
 Note: MLC-VQA has been tested on Python 3.8, but it should work with newer versions of Python as well.
 
 # Usage
-<!--- 
-1. Clone this repo
-2. `cd mlcvqa`
-3. `conda create -n mlcvqa python=3.8` & `conda activate mlcvqa`
-4. Clone dependencies (VMAF, SlowFast, SlowFast_feature_extractor)
-5. Refer to their documentation and follow their installation process
-6. `pip install -r requirements.txt`
--->
-
-Follow the above setup, update the paths in yaml files in mlc_vqa_e2e/configs if needed and make sure the mlcvqa environment is activated. For a single pair of videos, from folder mlvideocodec/tools/mlc_vqa_e2e run:
+Follow the above setup, update the paths in yaml files in ./configs if needed and make sure the mlcvqa environment is activated. For a single pair of videos, run:
 
 `python main.py --ref <path_to>/ref.yuv --dis <path_to>/dis.yuv --mlcvqa_config ./configs/mlcvqa_config.yaml --slowfast_config ./tridivb_slowfast_feature_extractor/configs/SLOWFAST_8x8_R50.yaml --vmaf_config ./configs/vmaf_config.yaml`
 
 For a list of pair of videos:
 
-`python main.py --dataset path/to/dataset.csv --mlcvqa_config path/to/config.yaml --slowfast_config ./tridivb_slowfast_feature_extractor/configs/SLOWFAST_8x8_R50.yaml --vmaf_config ./configs/vmaf_config.yaml`
+`python main.py --dataset <path_to>/dataset.csv --mlcvqa_config ./configs/mlcvqa_config.yaml --slowfast_config ./tridivb_slowfast_feature_extractor/configs/SLOWFAST_8x8_R50.yaml --vmaf_config ./configs/vmaf_config.yaml`
 
 ## Dataset
 
