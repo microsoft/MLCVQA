@@ -26,7 +26,7 @@ git submodule update --init --recursive
 Install the depenedencies for tridivb_slowfast_feature_extractor, fb_slowfast and VMAF: 
 <!--- sh slowfastDepsSetup.sh mlcvqa -->
 ```cmd
-cd mlvideocodec/tools/mlc_vqa_e2e
+cd <path_to_MLVCQA_folder>
 pip install -r requirements.txt
 ```
 
