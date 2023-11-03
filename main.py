@@ -18,7 +18,6 @@ if __name__ == "__main__":
     args.add_argument("--slowfast_config", type=str, default="./tridivb_slowfast_feature_extractor/configs/SLOWFAST_8x8_R50.yaml", help="path to the slowfast config file")
     args.add_argument("--vmaf_config", type=str, default="./configs/vmaf_config.yaml", help="path to the vmaf config file")
     args.add_argument("--preprocess", action="store_true", help="input videos should be 1920x1080, 10sec, 30fps")
-    args.add_argument("--temp_folder", type=str, help="location for the preprocessed videos if --preprocess is set to True.")
 
     args = args.parse_args()
 
@@ -38,13 +37,12 @@ if __name__ == "__main__":
     
     # add preprocessing to make sure the input is 1080p, 30fps, 10sec
     if args.preprocess:
-        if args.temp_folder is None:
-            print("please provide a temp folder")
-            exit()
-        if not os.path.exists(args.temp_folder):
-            os.makedirs(args.temp_folder)
-        data_pairs = process_video_pairs(data_pairs, args.temp_folder)
-
+        output_folder = os.path.join(os.path.dirname(args.dis), "temp")
+        print(f'Warning: Input videos are being preprocessed and saved to {output_folder} if they are not 1080p, 30fps, 10sec. \
+            The model is trained on 1080p, 30fps, 10sec videos and may not be as accurate with different inputs.')
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+        data_pairs = process_video_pairs(data_pairs, output_folder)
         
     slowfast_cfg_path = args.slowfast_config
     vmaf_cfg_path = args.vmaf_config
