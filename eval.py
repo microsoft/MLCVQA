@@ -16,7 +16,7 @@ from libs.modeling import make_meta_arch
 from libs.utils import valid_one_epoch, fix_random_seed
 
 
-def load_mlcvqa_configuration(args: dict)-> dict:
+def load_mlcvqa_configuration(config_path: str)-> dict:
     """
     Loads the configuration file from the provided path.
 
@@ -24,12 +24,10 @@ def load_mlcvqa_configuration(args: dict)-> dict:
         config_path (str): path to the configuration file
 
     Returns:
-        dict: configuration file
+        cfg (dict): configuration file
     """
-    # DB
-    print(f'loading mlcvqa_config: {args.mlcvqa_config}')
-    if os.path.isfile(args.mlcvqa_config):
-        cfg = load_config(args.mlcvqa_config)
+    if os.path.isfile(config_path):
+        cfg = load_config(config_path)
     else:
         raise ValueError("Config file does not exist.")
     return cfg
@@ -44,7 +42,7 @@ def load_mlcvqa_checkpoint(ckpt_path: str)-> str:
         ckpt_path (str): path to the checkpoint file
 
     Returns:
-        str: path to the checkpoint file
+        ckpt_file (str): path to the checkpoint file
     """
     if ".pth.tar" in ckpt_path:
         assert os.path.isfile(ckpt_path), "CKPT file does not exist!"
@@ -65,7 +63,7 @@ def load_mlcvqa_dataloader(cfg: dict, features)-> torch.utils.data.DataLoader:
         features (dict): features dictionary
 
     Returns:
-        torch.utils.data.DataLoader: dataloader
+        val_loader (torch.utils.data.DataLoader): mlcvqa dataloader
     """
     val_dataset = make_dataset(
         cfg['dataset_name'], False, cfg['val_split'], features, **cfg['dataset']
@@ -90,7 +88,7 @@ def load_mlcvqa_model(cfg: dict)-> nn.DataParallel:
         ckpt_file (str): path to the checkpoint file
 
     Returns:
-        nn.DataParallel: model
+        model (nn.DataParallel): mlcvqa model
     """
     ckpt_path = cfg['test_cfg']['ckpt_path']
     ckpt_file = load_mlcvqa_checkpoint(ckpt_path)
@@ -118,7 +116,7 @@ def prepare_output_file(cfg: dict)-> str:
         cfg (dict): configuration file
 
     Returns:
-        str: path to the output file
+        output_file (str): path to the output file
     """
     output_folder = Path(cfg['test_cfg']['save_outputs'])
     output_folder.mkdir(parents=True, exist_ok=True)
@@ -126,9 +124,20 @@ def prepare_output_file(cfg: dict)-> str:
     return output_file
 
 
-def evaluate(args, features_object):
+def evaluate(config_path: str, features_object)-> tuple:
+    """
+    Computes mlcvqa predictions from given feature pairs
+
+    Args:
+        config_path (str): path to the configuration file
+        ckpt_file (str): path to the checkpoint file
+        
+    Returns:
+        sample_names (list): video pairs
+        pred_mos (list): predicted MOS
+    """
     
-    cfg = load_mlcvqa_configuration(args)
+    cfg = load_mlcvqa_configuration(config_path)
 
     val_loader = load_mlcvqa_dataloader(cfg, features_object)
     
@@ -154,7 +163,7 @@ def evaluate(args, features_object):
     return sample_names, pred_mos
 
 
-def mock_features_object(path):
+def mock_features_object(path: str):
         """
         Mock the features object. We need to create a mock object that has: 
         features_object = [
@@ -180,6 +189,12 @@ def mock_features_object(path):
             },
             ...
         ]
+
+        Args:
+            path (str): path to mock vmaf features
+
+        Returns:
+            features_object (tuple): tuple of dictionaries
         """
 
         # VmafFeatureExtractor

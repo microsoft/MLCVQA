@@ -67,7 +67,7 @@ train_cfg: {
 }
 
 test_cfg: {
-  ckpt_path: "/home/azureuser/cloudfiles/data/datastore/mlvideo/azureml/b86cecf6-7460-4443-97ca-a93b16346ce8/ckpt/sf_clic_feats_raw_mos_old_aug_split_any_vmaf_2022-11-09 23%253A00%253A10",
-  save_outputs: "/home/azureuser/cloudfiles/code/Users/rubenal/reports/mlcvqa",
+  ckpt_path: "../checkpoints/mlcvqa/epoch_214.pth.tar",
+  save_outputs: "outputs",
   print_freq: 10
 }

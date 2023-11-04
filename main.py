@@ -11,15 +11,16 @@ from preprocess import process_video_pairs
 if __name__ == "__main__":
 
     args = argparse.ArgumentParser()
-    args.add_argument("--ref", type=str, default="./../../data/test_yuv/orig_480x360_30fps.yuv", help="path to reference video")
-    args.add_argument("--dis", type=str, default="./../../data/test_yuv/comp1000_480x360_30fps.yuv", help="path to distorted video")
-    args.add_argument("--dataset", type=str, default=None, help="path to pairs file, comma separated format")
-    args.add_argument('--mlcvqa_config', type=str, metavar='DIR', help='path to a config file')
+    args.add_argument("--ref", type=str, help="path to reference video")
+    args.add_argument("--dis", type=str, help="path to distorted video")
+    args.add_argument("--dataset", type=str, help="path to pairs file, comma separated format")
+    args.add_argument('--mlcvqa_config', type=str, default="./configs/mlcvqa_config.yaml", help='path to mlcvqa config file')
     args.add_argument("--slowfast_config", type=str, default="./tridivb_slowfast_feature_extractor/configs/SLOWFAST_8x8_R50.yaml", help="path to the slowfast config file")
     args.add_argument("--vmaf_config", type=str, default="./configs/vmaf_config.yaml", help="path to the vmaf config file")
     args.add_argument("--preprocess", action="store_true", help="input videos should be 1920x1080, 10sec, 30fps")
 
     args = args.parse_args()
+    print(type(args))
 
     data_pairs :List[Tuple[str, str]] = []
     if args.dataset is not None:

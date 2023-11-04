@@ -53,15 +53,10 @@ def pair_batch_collator(batch):
     """
         A batch collator
     """
-    print("Hererherhehrehrherhehrhe", len(batch))
     ref_batch =  [x["ref_frames"] for x in batch]
-
-
-    
 
     ref_slow = [x[0] for x in ref_batch]
     ref_fast = [x[1] for x in ref_batch]
-
 
     B =  len(ref_batch)
     C = 3
@@ -85,13 +80,10 @@ def pair_batch_collator(batch):
 
     ref_batch = [ref_slow, ref_fast]
 
-
-
     dis_batch =  [x["dis_frames"] for x in batch]
     dis_slow = [x[0] for x in dis_batch]
     dis_fast = [x[1] for x in dis_batch]
     dis_filenames = [x["dis"] for x in batch]
-
 
     dis_slow_e = torch.empty(B, C, T_slow, H, W)
     dis_fast_e = torch.empty(B, C, T_fast, H, W)
