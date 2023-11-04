@@ -154,3 +154,23 @@ def get_video_info(in_path: str, in_resolution: str, in_fps: int) -> Tuple[float
     fps = num_frames / duration_sec
         
     return duration_sec, num_frames, fps
+
+
+def run_preprocess(args: dict, data_pairs: List[Tuple[str, str]]) -> List[Tuple[str, str]]:
+    """
+    Preprocesses input videos to ensure they are 1080p, 30fps, and 10 seconds long.
+
+    Args:
+        args (dict): A dictionary containing the configuration file path, dataset path, and output file path.
+        data_pairs (List[Tuple[str, str]]): A list of tuples containing the paths to the input videos and their corresponding ground truth files.
+
+    Returns:
+        List[Tuple[str, str]]: A list of tuples containing the paths to the preprocessed videos and their corresponding ground truth files.
+    """
+    config = load_mlcvqa_configuration(args)
+    output_folder = os.path.join(os.path.dirname(args.dataset) if args.dataset else os.path.dirname(args.dis), "preprocessed")
+    os.makedirs(output_folder, exist_ok=True)
+    print(f'Warning: Input videos are being preprocessed and saved to {output_folder} if they are not 1080p, 30fps, 10sec. \
+            The model is trained on 1080p, 30fps, 10sec videos and may not be as accurate with different inputs.')
+    data_pairs = process_video_pairs(data_pairs, output_folder)
+    return data_pairs, output_folder

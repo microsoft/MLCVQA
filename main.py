@@ -6,7 +6,8 @@ from typing import List, Tuple
 from features import extract_features, load_slowfast_configuration, load_vmaf_configuration, load_pairs
 from eval import evaluate
 from pprint import pprint
-from preprocess import process_video_pairs
+from preprocess import run_preprocess
+
 
 if __name__ == "__main__":
 
@@ -35,15 +36,6 @@ if __name__ == "__main__":
         "slowfast",
         "vmaf",
     ]
-    
-    # add preprocessing to make sure the input is 1080p, 30fps, 10sec
-    if args.preprocess:
-        output_folder = os.path.join(os.path.dirname(args.dis), "temp")
-        print(f'Warning: Input videos are being preprocessed and saved to {output_folder} if they are not 1080p, 30fps, 10sec. \
-            The model is trained on 1080p, 30fps, 10sec videos and may not be as accurate with different inputs.')
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-        data_pairs = process_video_pairs(data_pairs, output_folder)
         
     slowfast_cfg_path = args.slowfast_config
     vmaf_cfg_path = args.vmaf_config
@@ -53,10 +45,17 @@ if __name__ == "__main__":
 
     cfgs = [slow_fast_cfg, vmaf_cfg]
 
+    # add preprocessing to make sure the input is 1080p, 30fps, 10sec
+    if args.preprocess:
+        data_pairs, preprocessed_dir = run_preprocess(args, data_pairs)
+
     features_object = extract_features(cfgs, feature_extractors, data_pairs)
 
     results = evaluate(args, features_object)
 
     pprint(results)
 
-    #TODO: remove the temp folder
+    #remove output folder if it exists
+    if args.preprocess:
+        print(f'Removing temporary folder: {preprocessed_dir}.')
+        os.system(f'rm -rf {preprocessed_dir}')
