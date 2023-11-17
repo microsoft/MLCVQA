@@ -1,5 +1,5 @@
 import yaml
-
+import os
 
 DEFAULTS = {
     # random seed for reproducibility, a large number is preferred
@@ -115,6 +115,10 @@ def _update_config(config):
 def load_config(config_file, defaults=DEFAULTS):
     with open(config_file, "r") as fd:
         config = yaml.load(fd, Loader=yaml.FullLoader)
+    
+    # Model path is relative to config
+    config["test_cfg"]["ckpt_path"] = os.path.join(os.path.dirname(config_file), config["test_cfg"]["ckpt_path"])
+
     _merge(defaults, config)
     config = _update_config(config)
     return config

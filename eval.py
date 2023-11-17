@@ -16,7 +16,7 @@ from libs.modeling import make_meta_arch
 from libs.utils import valid_one_epoch, fix_random_seed
 
 
-def load_mlcvqa_configuration(config_path: str)-> dict:
+def load_mlcvqa_configuration(args: dict)-> dict:
     """
     Loads the configuration file from the provided path.
 
@@ -26,8 +26,8 @@ def load_mlcvqa_configuration(config_path: str)-> dict:
     Returns:
         cfg (dict): configuration file
     """
-    if os.path.isfile(config_path):
-        cfg = load_config(config_path)
+    if os.path.isfile(args.mlcvqa_config):
+        cfg = load_config(args.mlcvqa_config)
     else:
         raise ValueError("Config file does not exist.")
     return cfg
@@ -221,10 +221,8 @@ def mock_features_object(path: str):
                 
             # SlowFeatureExtractor
             # create a numpy array of size (18,2304) for every json file
-        
             ref = np.random.rand(18,2304)
             dis = np.random.rand(18,2304)
-
             
             features_object += (
                 {
@@ -248,13 +246,3 @@ def mock_features_object(path: str):
         return features_object
 
 
-if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser(description='Train a point-based transformer for action localization')
-    parser.add_argument('--mlcvqa_config', type=str, metavar='DIR', help='path to a config file')
-    parser.add_argument('--vmaf_results', type=str, help='path to vmaf features directory for feature_obj_mock')
-    args = parser.parse_args()
-
-    features_object_mock = mock_features_object(path=args.vmaf_results)
-    
-    evaluate(args, features_object=features_object_mock)

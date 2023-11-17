@@ -7,21 +7,28 @@ from features import extract_features, load_slowfast_configuration, load_vmaf_co
 from eval import evaluate
 from pprint import pprint
 from preprocess import run_preprocess
+import shutil
 
 
 if __name__ == "__main__":
 
-    args = argparse.ArgumentParser()
-    args.add_argument("--ref", type=str, help="path to reference video")
-    args.add_argument("--dis", type=str, help="path to distorted video")
-    args.add_argument("--dataset", type=str, help="path to pairs file, comma separated format")
-    args.add_argument('--mlcvqa_config', type=str, default="./configs/mlcvqa_config.yaml", help='path to mlcvqa config file')
-    args.add_argument("--slowfast_config", type=str, default="./tridivb_slowfast_feature_extractor/configs/SLOWFAST_8x8_R50.yaml", help="path to the slowfast config file")
-    args.add_argument("--vmaf_config", type=str, default="./configs/vmaf_config.yaml", help="path to the vmaf config file")
-    args.add_argument("--preprocess", action="store_true", help="input videos should be 1920x1080, 10sec, 30fps")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ref", type=str, help="path to reference video")
+    parser.add_argument("--dis", type=str, help="path to distorted video")
+    parser.add_argument("--dataset", type=str, help="path to pairs file, comma separated format")
+    config_dir = os.path.join(os.path.dirname(__file__), "configs")
+    parser.add_argument('--mlcvqa_config', type=str,
+                        default=os.path.join(config_dir, "mlcvqa_config.yaml"),
+                        help='path to a config file')
+    parser.add_argument("--slowfast_config", type=str,
+                        default=os.path.join(config_dir, "SLOWFAST_8x8_R50.yaml"),
+                        help="path to the slowfast config file")
+    parser.add_argument("--vmaf_config", type=str,
+                        default=os.path.join(config_dir, "vmaf_config.yaml"),
+                        help="path to the vmaf config file")
+    parser.add_argument("--preprocess", action="store_true", help="input videos should be 1920x1080, 10sec, 30fps")
 
-    args = args.parse_args()
-    print(type(args))
+    args = parser.parse_args()
 
     data_pairs :List[Tuple[str, str]] = []
     if args.dataset is not None:
@@ -57,5 +64,4 @@ if __name__ == "__main__":
 
     #remove output folder if it exists
     if args.preprocess:
-        print(f'Removing temporary folder: {preprocessed_dir}.')
-        os.system(f'rm -rf {preprocessed_dir}')
+        shutil.rmtree(preprocessed_dir, ignore_errors=True)

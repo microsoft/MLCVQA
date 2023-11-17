@@ -1,5 +1,7 @@
 # similar to feat_extraction.py
 import argparse
+import os.path
+
 from parse import parse
 import argparse
 from easydict import EasyDict as edict
@@ -11,21 +13,9 @@ import pandas as pd
 from typing import List, Tuple, Dict, Union
 from pathlib import Path
 from pprint import pprint
-import sys
 
 import torch
 from dataset import VideoDataSet
-
-
-
-def get_vmaf_tool_path(tool_path:str='run_vmaf'):
-  pyexe_path = Path(sys.executable)
-  pyexe_dir = pyexe_path.parent
-  vmaf_path = pyexe_dir / tool_path
-  if not vmaf_path.exists():
-    raise FileNotFoundError(f'{tool_path} not found in {pyexe_dir}. Please install vmaf.')
-  vmaf_path_str = str(vmaf_path)
-  return vmaf_path_str
 
 def load_pairs(pairs_path: str)-> List[Tuple[str, str]]:
     """
@@ -40,7 +30,8 @@ def load_pairs(pairs_path: str)-> List[Tuple[str, str]]:
     with open(pairs_path, "r") as f:
         data_pairs = f.readlines()
     data_pairs = [line.strip().split(",") for line in data_pairs]
-    data_pairs = [(ref, dis) for ref, dis in data_pairs]
+    basedir = os.path.dirname(pairs_path)
+    data_pairs = [(os.path.join(basedir, ref), os.path.join(basedir, dis)) for ref, dis in data_pairs]
     return data_pairs
 
 
@@ -55,7 +46,8 @@ def load_slowfast_configuration(path_to_config: str) -> edict:
     Returns:
         cfg (dict): `updated` configuration dictionary
     """
-     
+    # path_to_config = "/home/azureuser/cloudfiles/code/Users/rubenal/tools_av_models/mlvideocodec/tools/mlc_vqa_e2e/tridivb_slowfast_feature_extractor/configs/SLOWFAST_8x8_R50.yaml"
+    
     with open(path_to_config, "r") as stream:
         cfg = edict(yaml.safe_load(stream))
         cfg.DATA.VID_FILE_EXT = ".yuv"
@@ -115,7 +107,9 @@ def load_vmaf_configuration(path_to_config: str) -> edict:
     """
     with open(path_to_config, "r") as stream:
         cfg = edict(yaml.safe_load(stream))
-    
+
+    # Model path is relative to config
+    cfg.MODEL_PATH = os.path.join(os.path.dirname(path_to_config), cfg.MODEL_PATH)
     return cfg
 
 
@@ -227,10 +221,7 @@ def load_vmaf_model(cfg: edict) -> List[str]:
             paths are added later in the vmaf_inference function.
     """
     cmd = [
-        f"PYTHONPATH={cfg.PYTHONPATH}",
-        "python",
         cfg.RUN_VMAF_PATH,
-        # f"{get_vmaf_tool_path('run_vmaf')}", #'/anaconda/envs/mlcvqa/bin/run_vmaf'
         cfg.FORMAT,
         str(cfg.WIDTH),
         str(cfg.HEIGHT),
@@ -258,8 +249,8 @@ def _update_model(model: List[str], loader: List[str]):
         model (List[str]): list of strings with the command to run the
             VMAF feature extractor with the reference and distorted video paths
     """
-    model[6] = loader[0]
-    model[7] = loader[1]
+    model[4] = loader[0]
+    model[5] = loader[1]
     return model
         
 
@@ -274,10 +265,9 @@ def vmaf_inference(loader, model):
     # video paths are added here
     model = _update_model(model, loader)
 
-    cmd = " ".join(model)
-    print(cmd)
+    print(f'Running command:\n{" ".join(model)}')
     # run the process and wait for it to finish
-    result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, check=True)
+    result = subprocess.run(model, stdout=subprocess.PIPE, check=True)
     result = result.stdout.decode("utf-8")
     result = json.loads(result)
     return result
@@ -363,8 +353,6 @@ def extract_features(cfgs: List[edict], feature_extractors: List[str], video_pai
     vmaf_cfg = cfgs[1]
     features_object = []
 
-    # python mlcvqa --ref path --dis path --csv_path
-
     for sample_id, video_pair in enumerate(video_pairs):
         
         # slowfast section
@@ -396,7 +384,6 @@ def extract_features(cfgs: List[edict], feature_extractors: List[str], video_pai
             'sample_name': f"{video_pair[0]}_{video_pair[1]}"
         })
 
-
         # vmaf section
         vmaf_model = load_vmaf_model(vmaf_cfg)
 
@@ -415,39 +402,3 @@ def extract_features(cfgs: List[edict], feature_extractors: List[str], video_pai
         })
 
     return features_object
-
-
-if __name__ == "__main__":
-    
-    args = argparse.ArgumentParser()
-    args.add_argument("--ref", type=str, help="path to reference video")
-    args.add_argument("--dis", type=str, help="path to distorted video")
-    args.add_argument("--dataset", type=str, default=None, help="path to pairs file, comma separated format")
-    args.add_argument("--slowfast_config", type=str, default="./tridivb_slowfast_feature_extractor/configs/SLOWFAST_8x8_R50.yaml", help="path to the slowfast config file")
-    args.add_argument("--vmaf_config", type=str, default="./configs/vmaf_config.yaml", help="path to the vmaf config file")
-   
-
-    args = args.parse_args()
-
-    data_pairs :List[Tuple[str, str]] = []
-    if args.dataset is not None:
-        # load pairs from dataset
-        data_pairs = load_pairs(args.dataset)
-    else:
-        # load pairs from command line
-        data_pairs = [(args.ref, args.dis)]
-
-    # configure slowfast and vmaf feature extractors
-    feature_extractors = [
-        "slowfast",
-        "vmaf",
-    ]
-
-    slowfast_cfg_path = args.slowfast_config
-    vmaf_cfg_path = args.vmaf_config
-    slow_fast_cfg = load_slowfast_configuration(slowfast_cfg_path)
-    vmaf_cfg = load_vmaf_configuration(vmaf_cfg_path)
-
-    cfgs = [slow_fast_cfg, vmaf_cfg]
-
-    features_object = extract_features(cfgs, feature_extractors, data_pairs)

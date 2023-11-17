@@ -1,7 +1,7 @@
 import subprocess
 import os
 from typing import List, Tuple, Dict, Union
-
+from eval import load_mlcvqa_configuration
 
 
 def process_video_pairs(video_pairs: List[Tuple[str, str]], temp_folder: str):
@@ -49,7 +49,7 @@ def process_video(w: int, h: int, r: float, d: float, input_video: str, output_v
 
     # if output_video already exists, return the path of the output_video and don't process
     if os.path.exists(output_video):
-        print(f'video already exists: {output_video}')
+        print(f'Video already exists: {output_video}')
         return output_video, None
 
     dur_change = duration_change(d)
@@ -170,7 +170,6 @@ def run_preprocess(args: dict, data_pairs: List[Tuple[str, str]]) -> List[Tuple[
     config = load_mlcvqa_configuration(args)
     output_folder = os.path.join(os.path.dirname(args.dataset) if args.dataset else os.path.dirname(args.dis), "preprocessed")
     os.makedirs(output_folder, exist_ok=True)
-    print(f'Warning: Input videos are being preprocessed and saved to {output_folder} if they are not 1080p, 30fps, 10sec. \
-            The model is trained on 1080p, 30fps, 10sec videos and may not be as accurate with different inputs.')
+    print(f'Warning: Input videos are being preprocessed and saved to {output_folder} if they are not 1080p, 30fps, 10sec. The model is trained on 1080p, 30fps, 10sec videos and may not be as accurate with different inputs.')
     data_pairs = process_video_pairs(data_pairs, output_folder)
     return data_pairs, output_folder

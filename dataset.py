@@ -8,7 +8,8 @@ import cv2
 import numpy as np
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from tridivb_slowfast_feature_extractor.datasets.videoset import VideoSet
-from fb_slowfast.slowfast.datasets.utils import pack_pathway_output
+# from fb_slowfast.slowfast.datasets.utils import pack_pathway_output #TODO: remove
+from slowfast.datasets.utils import pack_pathway_output
 import av
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -103,10 +104,8 @@ class VideoDataSet(VideoSet):
                     # frames = []
                     
                     # Read and process each frame
-                    print("Reading frames from {}".format(path_to_vid))
                     frame_counter = 0
                     while True:
-                        print("Reading frame {}".format(frame_counter))
                         # Read Y, U, and V planes
                         y_plane = yuv_file.read(frame_width * frame_height)
                         u_plane = yuv_file.read(frame_width * frame_height // 4)
