@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "docker-run",
+			"label": "docker-run: mlc_vqa_e2e",
+			"python": {
+				"file": "main.py"
+			},
+			"dockerRun": {
+				"image": "<image name and tag>",
+				"volumes": [
+					{
+						"localPath": "${workspaceFolder}",
+						"containerPath": "/app"
+					},
+					{
+						"localPath": "/path/to/dataset",
+						"containerPath": "/mnt"
+					}
+				],
+				"customOptions": "--gpus all --shm-size 2Gb",
+				"remove": true
+			}
+		}
+	]
+}

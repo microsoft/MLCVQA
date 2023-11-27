@@ -1,0 +1,6 @@
+[project]
+name = "PIL"
+version = "0.1"
+description = "Fake PIL package"
+license = { text = "Historical Permission Notice and Disclaimer (HPND)" }
+dependencies = ["Pillow"]
