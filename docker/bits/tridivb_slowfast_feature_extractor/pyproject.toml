@@ -1,0 +1,11 @@
+[project]
+name = "tridivb_slowfast_feature_extractor"
+version = "0.1"
+description = "SlowFast Feature Extractor"
+license = { text = "MIT License" }
+authors = [
+    { name = "Tridivraj Bhattacharyya" }
+]
+
+[project.urls]
+Repository = "https://github.com/tridivb/slowfast_feature_extractor"
