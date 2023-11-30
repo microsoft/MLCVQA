@@ -4,7 +4,5 @@ HEIGHT: 1080
 REFERENCE_PATH: ""
 DISTORTED_PATH: ""
 OUTPUT_FORMAT: json
-
-PYTHONPATH: ./vmaf/python
-RUN_VMAF_PATH: ./vmaf/python/vmaf/script/run_vmaf.py
-MODEL_PATH: ./checkpoints/vmaf/final_on_split_0_refref.pkl 
+RUN_VMAF_PATH: run_vmaf
+MODEL_PATH: ../checkpoints/vmaf/final_on_split_0_refref.pkl
