@@ -12,24 +12,37 @@ Run the following command in `docker` folder:
 docker build . -t <image_name:tag> 
 ```
 
-## Usage
-For a single pair of videos, run:
-
-`docker run --rm --gpus all --shm-size 2Gb -v <path/to/repo>:/app -v <path/to/dataset>:/mnt -v <path/to/outputs>:/app/outputs <image_name:tag> python main.py --ref <path_to>/ref.yuv --dis <path_to>/dis.yuv --preprocess`
-
-For a list of pair of videos, run
-
-`docker run --rm --gpus all --shm-size 2Gb -v <path/to/repo>:/app -v <path/to/dataset>:/mnt -v <path/to/outputs>:/app/outputs <image_name:tag> python main.py --dataset <path_to>/dataset.csv --preprocess`
-
-note that --dataset, --ref, and --dis must be container local paths.
-
 ## Debugging MLCVQA
-
 Example configuration files for VSCode are in `docker/vscode` folder:
 - [tasks.json](vscode/tasks.json)
 - [launch.json](vscode/launch.json)
 
-# Dataset
+Make sure BuildKit is enabled. You can add it to path by `export DOCKER_BUILDKIT=1`.
+
+
+## Usage
+For a single pair of videos, run:
+
+```
+docker run --rm --gpus all --shm-size 2Gb -v <path/to/repo>:/app -v <path/to/dataset>:/mnt -v <path/to/outputs>:/app/outputs <image_name:tag> python main.py --ref <path_to>/ref.yuv --dis <path_to>/dis.yuv --preprocess
+```
+
+For a list of pair of videos, run
+
+```
+docker run --rm --gpus all --shm-size 2Gb -v <path/to/repo>:/app -v <path/to/dataset>:/mnt -v <path/to/outputs>:/app/outputs <image_name:tag> python main.py --dataset <path_to>/dataset.csv --preprocess
+```
+
+### Mounted folders 
+- `<path/to/repo>:/app` mounts the MLCVQA repository
+- `<path/to/dataset>:/mnt` mounts the folder that contains origianl and distorted videos. Videos can be in sufolders of dataset.
+- `<path/to/outputs>:/app/outputs` mounts the folder where MCLVQA outputs are to be saved
+
+### Arguments
+Arguments `--dataset`, `--ref`, and `--dis` must be container local paths.
+
+
+### Dataset
 
 For the `dataset` parameter to work properly, the provided file has to have:
 - No header
