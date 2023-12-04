@@ -11,14 +11,7 @@ Run the following command in `docker` folder:
 ```
 docker build . -t <image_name:tag> 
 ```
-
-## Debugging MLCVQA
-Example configuration files for VSCode are in `docker/vscode` folder:
-- [tasks.json](vscode/tasks.json)
-- [launch.json](vscode/launch.json)
-
 Make sure BuildKit is enabled. You can add it to path by `export DOCKER_BUILDKIT=1`.
-
 
 ## Usage
 For a single pair of videos, run:
@@ -65,6 +58,13 @@ path/to/ref.yuv,path/to/dis.yuv
         ]
 }
 ```
+Predicted values are expected to be between 0 and 10.
+
+
+# Debugging MLCVQA
+Example configuration files for VSCode are in `docker/vscode` folder:
+- [tasks.json](vscode/tasks.json)
+- [launch.json](vscode/launch.json)
 
 # Contributing
 

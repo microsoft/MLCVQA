@@ -1,5 +1,5 @@
 # image to build other wheels
-FROM mcr.microsoft.com/mirror/nvcr/nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04 AS wheel-build
+FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04 AS wheel-build
 
 RUN apt-get update && apt-get upgrade --yes &&  \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends tzdata \
@@ -60,12 +60,8 @@ RUN mkdir -p /package && cd vmaf && tar czf /package/vmaf-tools.tar.gz \
     libvmaf/build/tools/vmaf libvmaf/build/tools/vmafossexec
 RUN pip3 wheel --no-cache-dir -c constraints.txt -f /wheel -w /wheel ./vmaf/python
 
-# Download azcopy
-RUN python -c "import urllib.request; \
-    urllib.request.urlretrieve('https://aka.ms/downloadazcopy-v10-linux', '/package/azcopy.tar.gz')"
-
 # final image
-FROM mcr.microsoft.com/mirror/nvcr/nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu20.04 as training-image
+FROM nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu20.04 AS training-image
 
 RUN apt-get update && apt-get upgrade --yes && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends tzdata \
@@ -86,11 +82,5 @@ RUN --mount=type=bind,target=/package,source=/package,from=wheel-build \
 
 # Cache slowfast model
 RUN python -c "import torch.hub; torch.hub.load('facebookresearch/pytorchvideo', model='slowfast_r101', pretrained=True)"
-
-# Install azcopy
-RUN --mount=type=bind,target=/package,source=/package,from=wheel-build \
-    cd /opt && tar xzf /package/azcopy.tar.gz && \
-    ln -s /opt/azcopy_*/azcopy /usr/local/bin/azcopy && \
-    echo "azcopy:"  `readlink /usr/local/bin/azcopy`
 
 WORKDIR /app
