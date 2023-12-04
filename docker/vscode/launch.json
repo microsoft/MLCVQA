@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "mlc_vqa_e2e",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: mlc_vqa_e2e",
+            "python": {
+                "pathMappings": [
+                    {
+                        "localRoot": "${workspaceFolder}",
+                        "remoteRoot": "/app"
+                    }
+                ],
+                "projectType": "general",
+                "args": [
+                    "--ref=/mnt/ref_video.yuv",
+                    "--dis=/mnt/dis_video.yuv"
+                ]
+            }
+        }
+    ]
+}
