@@ -58,7 +58,7 @@ path/to/ref.yuv,path/to/dis.yuv
         ]
 }
 ```
-Predicted values are expected to be between 0 and 10.
+Predicted values are expected to be between 1 and 9.
 
 
 # Debugging MLCVQA
