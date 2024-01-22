@@ -15,7 +15,7 @@ numpy==1.23.5
 opencv-python==4.8.1.78
 pandas==2.0.3
 parse==1.19.1
-Pillow==10.1.0
+Pillow==10.2.0
 psutil==5.9.6
 pycocotools==2.0.7
 pydot==1.4.2
